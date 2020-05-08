@@ -226,9 +226,10 @@ time-machine
 
 time-machine is intended to combine the advantages of freezegun and libfaketime.
 It works without ``LD_PRELOAD`` but still mocks the standard library functions everywhere they may be referenced.
+
 Its weak point is that other libraries using date/time system calls won't be mocked.
 Thankfully this is rare.
 It's also possible such python libraries can be added to the set mocked by time-machine.
 
-One drawback is that it only works with CPython, so can't be used with other Python interpreters like PyPy.
+Another drawback is that it only works with CPython, so it can't be used with other Python interpreters like PyPy.
 However it may possible to extend it to support other interpreters through different mocking mechanisms.
