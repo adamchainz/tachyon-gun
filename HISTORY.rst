@@ -2,6 +2,8 @@
 History
 =======
 
+* Support Python 3.10.
+
 * Convert C module to use PEP 489 multi-phase extension module initialization.
   This makes the module ready for Python sub-interpreters.
 
