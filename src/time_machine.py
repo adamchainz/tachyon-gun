@@ -312,6 +312,13 @@ def localtime(secs=None):
     return _time_machine.original_localtime(coordinates_stack[-1].time())
 
 
+def monotonic():
+    return 0.0
+    # if not coordinates_stack:
+    #     return _time_machine.original_time()
+    # return coordinates_stack[-1].time()
+
+
 def strftime(format, t=None):
     if t is not None:
         return _time_machine.original_strftime(format, t)

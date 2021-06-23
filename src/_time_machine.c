@@ -16,6 +16,7 @@ typedef struct {
 #endif
     PyCFunction original_gmtime;
     PyCFunction original_localtime;
+    PyCFunction original_monotonic;
     PyCFunction original_strftime;
     PyCFunction original_time;
 #if PY_VERSION_HEX >= 0x03070000
@@ -283,6 +284,40 @@ PyDoc_STRVAR(original_localtime_doc,
 \n\
 Call time.localtime() after patching.");
 
+/* time.monotonic() */
+
+static PyObject*
+_time_machine_monotonic(PyObject *self, PyObject *args)
+{
+    PyObject *time_machine_module = PyImport_ImportModule("time_machine");
+    PyObject *time_machine_monotonic = PyObject_GetAttrString(time_machine_module, "monotonic");
+
+    PyObject* result = PyObject_CallObject(time_machine_monotonic, args);
+
+    Py_DECREF(time_machine_monotonic);
+    Py_DECREF(time_machine_module);
+
+    return result;
+}
+
+static PyObject*
+_time_machine_original_monotonic(PyObject *module, PyObject *args)
+{
+    _time_machine_state *state = get_time_machine_state(module);
+
+    PyObject *time_module = PyImport_ImportModule("time");
+
+    PyObject* result = state->original_monotonic(module, args);
+
+    Py_DECREF(time_module);
+
+    return result;
+}
+PyDoc_STRVAR(original_monotonic_doc,
+"original_monotonic() -> floating point number\n\
+\n\
+Call time.monotonic() after patching.");
+
 /* time.strftime() */
 
 static PyObject*
@@ -469,6 +504,11 @@ _time_machine_patch_if_needed(PyObject *module, PyObject *unused)
     time_time_ns->m_ml->ml_meth = _time_machine_time_ns;
     Py_DECREF(time_time_ns);
 #endif
+
+    PyCFunctionObject *time_monotonic = (PyCFunctionObject *) PyObject_GetAttrString(time_module, "monotonic");
+    state->original_monotonic = time_monotonic->m_ml->ml_meth;
+    time_monotonic->m_ml->ml_meth = _time_machine_monotonic;
+    Py_DECREF(time_monotonic);
 
     Py_DECREF(time_module);
 
